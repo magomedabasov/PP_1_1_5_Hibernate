@@ -10,13 +10,14 @@ import static jm.task.core.jdbc.util.Util.*;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    String create_table = "create table if not exists users\n" +
-            "(\n" +
-            "    id       BIGINT primary key auto_increment,\n" +
-            "    name     varchar(40) not null,\n" +
-            "    lastName varchar(40) not null,\n" +
-            "    age      TINYINT     null\n" +
-            ");";
+    String create_table = """
+            create table if not exists users
+            (
+                id       BIGINT primary key auto_increment,
+                name     varchar(40) not null,
+                lastName varchar(40) not null,
+                age      TINYINT     null
+            );""";
     String drop_table = "drop table if exists users";
     String save_users = "insert into users(name, lastName, age) values(?, ?, ?)";
     String remove_user_by_id = "delete from users where id = ?";
