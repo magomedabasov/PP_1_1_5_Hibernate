@@ -1,37 +1,28 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import static jm.task.core.jdbc.util.Util.*;
-
 
 public class UserDaoJDBCImpl implements UserDao {
-
-    String create_table = """
-            create table if not exists users
-            (
-                id       BIGINT primary key auto_increment,
-                name     varchar(40) not null,
-                lastName varchar(40) not null,
-                age      TINYINT     null
-            );""";
-    String drop_table = "drop table if exists users";
-    String save_users = "insert into users(name, lastName, age) values(?, ?, ?)";
-    String remove_user_by_id = "delete from users where id = ?";
-    String clean_users_table = "truncate table users";
-    String get_all_users = "select id, name, lastName, age from users";
+    private final Connection connection = Util.getConnection();
 
 
     // Create table
     public void createUsersTable() {
-
-        try(Statement ps = DriverManager
-                .getConnection(URL, USER, PASSWORD)
-                .createStatement()) {
-            ps.execute(create_table);
+        String create_table = """
+                create table if not exists users
+                (
+                    id       BIGINT primary key auto_increment,
+                    name     varchar(40) not null,
+                    lastName varchar(40) not null,
+                    age      TINYINT     null
+                );""";
+        try (PreparedStatement ps = connection.prepareStatement(create_table)) {
+            ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,34 +30,31 @@ public class UserDaoJDBCImpl implements UserDao {
 
     // Delete table
     public void dropUsersTable() {
-        try (Statement ps = DriverManager
-                .getConnection(URL, USER, PASSWORD)
-                .createStatement()) {
-            ps.execute(drop_table);
+        String drop_table = "drop table if exists users";
+        try (PreparedStatement ps = connection.prepareStatement(drop_table)) {
+            ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     // Save user in table
-    public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement ps = DriverManager
-                .getConnection(URL, USER, PASSWORD)
-                .prepareStatement(save_users)) {
+    public void saveUser (String name, String lastName,byte age) {
+        String save_users = "insert into users(name, lastName, age) values(?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(save_users)) {
             ps.setString(1, name);
             ps.setString(2, lastName);
             ps.setByte(3, age);
             ps.execute();
-            System.out.println("saveUser OK");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     // Remove user from table
-    public void removeUserById(long id) {
-        try(PreparedStatement ps  = DriverManager
-                .getConnection(URL, USER, PASSWORD).prepareStatement(remove_user_by_id)) {
+    public void removeUserById (long id){
+        String remove_user_by_id = "delete from users where id = ?";
+        try(PreparedStatement ps  = connection.prepareStatement(remove_user_by_id)) {
             ps.setLong(1, id);
             ps.execute();
         } catch (SQLException e) {
@@ -75,11 +63,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     // Get all users from table
-    public List<User> getAllUsers() {
-        List<User> userList = new ArrayList<>();
-        try(PreparedStatement preparedStatement = DriverManager
-                .getConnection(URL, USER, PASSWORD)
-                .prepareStatement(get_all_users);
+    public List<User> getAllUsers () {
+    List<User> userList = new ArrayList<>();
+        String get_all_users = "select id, name, lastName, age from users";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(get_all_users);
             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -96,9 +83,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     // Clean users table
-    public void cleanUsersTable() {
-        try(Statement st = DriverManager.getConnection(URL, USER, PASSWORD).createStatement()) {
-            st.execute(clean_users_table);
+    public void cleanUsersTable () {
+        String clean_users_table = "truncate table users";
+        try(PreparedStatement st = connection.prepareStatement(clean_users_table)) {
+            st.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
