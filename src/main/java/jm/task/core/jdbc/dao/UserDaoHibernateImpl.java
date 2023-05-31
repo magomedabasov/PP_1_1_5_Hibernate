@@ -60,7 +60,7 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (Session session = sessionFactory.getCurrentSession();) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             try {
                 session.beginTransaction();
                 User user = new User(name, lastName, age);
@@ -93,7 +93,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = null;
-        try (Session session = sessionFactory.getCurrentSession();) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             try {
                 session.beginTransaction();
                 users = session.createQuery("from User").getResultList();
