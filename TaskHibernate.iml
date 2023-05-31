@@ -13,6 +13,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
+          <factory-entry name="TaskHibernate" value="456880b8-7231-4690-b838-6d1063d13ade" />
           <factory-entry name="TaskJDBC" value="456880b8-7231-4690-b838-6d1063d13ade" />
         </datasource-mapping>
         <naming-strategy-map />
